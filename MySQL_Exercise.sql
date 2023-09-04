@@ -12,7 +12,7 @@ CREATE TABLE players (
 	player_nationality VARCHAR(100)
 );
 
-# Insert values into table "players" 
+# Insert values into a table "players" 
 INSERT INTO players 
 (player_name, player_last_name, player_nationality)
 VALUES
@@ -38,7 +38,7 @@ CREATE TABLE players_facts(
 	FOREIGN KEY(player_id) REFERENCES players(player_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
     
-# Insert values into table "players_facts"  
+# Insert values into a table "players_facts"  
 INSERT INTO players_facts
 (player_age, position, season, player_market_value_at_time_million_euros, transfer_fee_million_euros)
 VALUES 
@@ -64,7 +64,7 @@ CREATE TABLE team_information (
 	FOREIGN KEY(player_id) REFERENCES players_facts(player_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
     
-# Insert values into table "team_information"
+# Insert values into a table "team_information"
 INSERT INTO team_information
 (left_team, left_team_competition, joined_team, joined_team_competition, player_id)
 VALUES
@@ -79,29 +79,34 @@ VALUES
 ('Borussia Dortmund', 'Bundesliga', 'Barcelona', 'Bundesliga', 9),
 ('Real Madrid', 'LaLiga', 'Chelsea', 'Premier League', 10);
 
-# Print players who names starts 'J'
+#1.Print the players whose names starts 'J'
+	
 SELECT player_name, player_last_name
 FROM players
 WHERE player_name LIKE 'J%';
 
-# Count how many diferrent clubs bought the players 
+#2.Count how many diferrent clubs bought the players 
+	
 SELECT COUNT(DISTINCT joined_team) AS 'Different clubs'
 FROM team_information;
 
-# Count how many names of the players start letters J and C
+#3.Count how many names of the players start with the letters J and C
+	
 SELECT LEFT(player_name, 1) AS Name, COUNT(*) AS 'Quantinty of players' 
 FROM players
 WHERE LEFT(player_name, 1) IN ('J', 'C') 
 GROUP BY Name;
 
-# Count how many players  transferred in each season
+#4.Count how many players transferred in each season
+	
 SELECT COUNT(p.player_id) AS 'Quantity of Players', season
 FROM players AS p
 INNER JOIN players_facts AS pf
 ON p.player_id = pf.player_id
 GROUP BY season;
 
-# Print player name, last name, age, position, team to which player has been transferred and the season in which transfer made, order by age from younger  
+#5.Print the player name, last name, age, position, team to which player has been transferred and the season in which transfer made, order by age from younger  
+	
 SELECT p.player_id AS 'Player ID', p.player_name AS 'Name', p.player_last_name AS 'Last Name', 
 pf.player_age AS 'Age', pf.position AS 'Position', ti.joined_team AS 'Team', pf.season AS 'Season'
 FROM players as p
@@ -111,7 +116,8 @@ LEFT JOIN team_information as ti
 ON pf.player_id = ti.player_id
 ORDER BY Age; 
 
-# Show which players are cheap, avarage and expensive. Print name, last name, team and season. Order by player name.
+#6.Show which players are cheap, avarage and expensive. Print name, last name, team and season. Order by player name.
+	
 SELECT p.player_name AS 'Name', p.player_last_name AS 'Last Name', ti.joined_team AS 'Team', pf.season AS 'Season',
 CASE 
 WHEN player_market_value_at_time_million_euros < 50
@@ -128,10 +134,14 @@ INNER JOIN team_information AS ti
 ON pf.player_id = ti.player_id
 ORDER BY player_name;
 
-# Join all tables together
-SELECT * FROM players 
-RIGHT JOIN players_facts
-ON players.player_id = players_facts.player_id
-RIGHT JOIN team_information
-ON players_facts.player_id = team_information.player_id;
+#7.Join all tables together 
+	
+SELECT *, NULL, NULL
+FROM players
+UNION ALL
+SELECT *
+FROM players_facts
+UNION ALL
+SELECT *
+FROM team_information;
 
